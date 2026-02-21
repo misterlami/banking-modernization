@@ -16,20 +16,37 @@ public class PostgreSqlDataStoreUtilities
 {
 	static Connection conn = null;
 	static String message;
+
+	private static String envOrDefault(String key, String defaultValue)
+	{
+		String value = System.getenv(key);
+		if (value == null || value.trim().isEmpty())
+		{
+			return defaultValue;
+		}
+		return value.trim();
+	}
 	
 	public static String getConnection()
 	{
 		try
 		{
+			String host = envOrDefault("LEGACY_PG_HOST", "localhost");
+			String port = envOrDefault("LEGACY_PG_PORT", "5432");
+			String database = envOrDefault("LEGACY_PG_DB", "banking_system");
+			String username = envOrDefault("LEGACY_PG_USER", "banking_user");
+			String password = envOrDefault("LEGACY_PG_PASSWORD", "Passw0rd!");
+			String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + "/" + database;
+
 			// PostgreSQL JDBC driver
 			Class.forName("org.postgresql.Driver").newInstance();
 			
 			// PostgreSQL connection string format
 			// Using lowercase database name for PostgreSQL best practices
 			conn = DriverManager.getConnection(
-				"jdbc:postgresql://localhost:5432/banking_system",
-				"banking_user", 
-				"Passw0rd!"
+				jdbcUrl,
+				username,
+				password
 			);							
 			message="Successful";
 			return message;

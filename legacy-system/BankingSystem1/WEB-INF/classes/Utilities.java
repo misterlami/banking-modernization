@@ -1,5 +1,6 @@
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.io.*;
 			String result = HtmlToString(file);
 			String urlName = req.getServletPath().replace("/","");
 			result = result + "<script type='text/javascript'>";
-			if (file == "Header.html") {
+			if ("Header.html".equals(file)) {
 
 				
 				if (session.getAttribute("uname")!=null){
@@ -87,22 +88,39 @@ import java.io.*;
 		/*  HtmlToString - Gets the Html file and Converts into String and returns the String.*/
 		public String HtmlToString(String file) {
 			String result = null;
-			try {
-				String webPage = url + file;
-				URL url = new URL(webPage);
-				URLConnection urlConnection = url.openConnection();
-				InputStream is = urlConnection.getInputStream();
-				InputStreamReader isr = new InputStreamReader(is);
-
-				int numCharsRead;
-				char[] charArray = new char[1024];
-				StringBuffer sb = new StringBuffer();
-				while ((numCharsRead = isr.read(charArray)) > 0) {
-					sb.append(charArray, 0, numCharsRead);
+			try (InputStream is = req.getServletContext().getResourceAsStream("/" + file)) {
+				if (is != null) {
+					try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+						int numCharsRead;
+						char[] charArray = new char[1024];
+						StringBuffer sb = new StringBuffer();
+						while ((numCharsRead = isr.read(charArray)) > 0) {
+							sb.append(charArray, 0, numCharsRead);
+						}
+						result = sb.toString();
+					}
 				}
-				result = sb.toString();
-			} 
-			catch (Exception e) {
+			} catch (Exception e) {
+			}
+
+			// Fallback to legacy URL-based fetch.
+			if (result == null) {
+				try {
+					String webPage = url + file;
+					URL url = new URL(webPage);
+					URLConnection urlConnection = url.openConnection();
+					InputStream is = urlConnection.getInputStream();
+					InputStreamReader isr = new InputStreamReader(is);
+
+					int numCharsRead;
+					char[] charArray = new char[1024];
+					StringBuffer sb = new StringBuffer();
+					while ((numCharsRead = isr.read(charArray)) > 0) {
+						sb.append(charArray, 0, numCharsRead);
+					}
+					result = sb.toString();
+				} catch (Exception e) {
+				}
 			}
 			return result;
 		} 
@@ -115,4 +133,3 @@ import java.io.*;
 		}
 
 	}
-

@@ -39,3 +39,28 @@ Focus: one vertical slice (Login + Transfer) with depth, governance, and measura
 - Container reproducible from clean clone
 - Security and validation enforced
 - Clear evidence of AI orchestration and verification
+
+## Run legacy with Docker
+From the repository root:
+
+```bash
+cd legacy-system
+docker compose up --build
+```
+
+Application URL:
+- `http://localhost:8082/banking/Home`
+
+Default legacy test credentials (see `legacy-system/Readme.txt`):
+- Customer: `Adi` / `yaji`
+- Banker: `banker` / `urvi`
+- Admin: `admin` / `admin`
+
+Troubleshooting:
+- First startup can take extra time while PostgreSQL initializes and imports `schema_postgresql.sql`.
+- If you update schema/init SQL and need a clean re-init, run:
+
+```bash
+docker compose down -v
+docker compose up --build
+```

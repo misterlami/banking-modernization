@@ -10,13 +10,46 @@ import java.util.*;
 public class MongoDBDataStoreUtilities
 {
 	static DBCollection storeComplaint;
+
+	private static String envOrDefault(String key, String defaultValue)
+	{
+		String value = System.getenv(key);
+		if (value == null || value.trim().isEmpty())
+		{
+			return defaultValue;
+		}
+		return value.trim();
+	}
+
+	private static int envIntOrDefault(String key, int defaultValue)
+	{
+		String value = System.getenv(key);
+		if (value == null || value.trim().isEmpty())
+		{
+			return defaultValue;
+		}
+		try
+		{
+			return Integer.parseInt(value.trim());
+		}
+		catch (NumberFormatException e)
+		{
+			return defaultValue;
+		}
+	}
+
 	public static DBCollection getConnection()
 	{
-		MongoClient mongo;
-		mongo = new MongoClient("localhost", 27017);
+		String host = envOrDefault("LEGACY_MONGO_HOST", "localhost");
+		int port = envIntOrDefault("LEGACY_MONGO_PORT", 27017);
+		String database = envOrDefault("LEGACY_MONGO_DB", "complaint");
+		String collection = envOrDefault("LEGACY_MONGO_COLLECTION", "storedComplaints");
 
-		DB db = mongo.getDB("complaint");
-		storeComplaint= db.getCollection("storedComplaints");	
+		MongoClient mongo;
+		mongo = new MongoClient(host, port);
+
+		DB db = mongo.getDB(database);
+		storeComplaint= db.getCollection(collection);	
 		return storeComplaint; 
 	}
 
