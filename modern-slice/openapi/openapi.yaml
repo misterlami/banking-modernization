@@ -1,0 +1,252 @@
+openapi: 3.0.3
+info:
+  title: Banking Modernization API
+  version: 1.0.0
+  description: Contract-first API for authentication and account transfers.
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate a user and return a JWT
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  summary: Successful login
+                  value:
+                    jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature
+                    userId: cust-1001
+                    roles:
+                      - CUSTOMER
+                      - TRANSFER_INITIATOR
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                failure:
+                  summary: Invalid credentials
+                  value:
+                    code: AUTH_INVALID_CREDENTIALS
+                    message: Invalid user ID or password.
+                    details: Credentials were rejected for userid cust-1001.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /accounts/{accountId}/transfer:
+    post:
+      summary: Transfer funds from one account to another
+      operationId: transferFunds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          description: Source account identifier
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '200':
+          description: Transfer processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+              examples:
+                success:
+                  summary: Successful transfer
+                  value:
+                    transactionId: txn-20260222-000847
+                    status: SUCCESS
+                    balanceAfter: 1540.75
+        '400':
+          description: Transfer request invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                failure:
+                  summary: Validation failure
+                  value:
+                    code: TRANSFER_INVALID_REQUEST
+                    message: Transfer request validation failed.
+                    details: amount must be greater than 0.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - userid
+        - password
+      properties:
+        userid:
+          type: string
+          minLength: 1
+          maxLength: 128
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - jwt
+        - userId
+        - roles
+      properties:
+        jwt:
+          type: string
+          minLength: 1
+        userId:
+          type: string
+          minLength: 1
+        roles:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            minLength: 1
+
+    TransferRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - targetAccountId
+        - amount
+        - currency
+      properties:
+        targetAccountId:
+          type: string
+          minLength: 1
+          maxLength: 64
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Z]{3}$'
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 140
+
+    TransferResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - transactionId
+        - status
+        - balanceAfter
+      properties:
+        transactionId:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+        balanceAfter:
+          type: number
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - details
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+        details:
+          type: string
+          minLength: 1
+
+  responses:
+    BadRequestError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            badRequest:
+              summary: Invalid request payload
+              value:
+                code: REQUEST_VALIDATION_ERROR
+                message: Request validation failed.
+                details: One or more fields are invalid.
+
+    UnauthorizedError:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unauthorized:
+              summary: Invalid or missing token
+              value:
+                code: AUTH_UNAUTHORIZED
+                message: Unauthorized.
+                details: Bearer token is missing, expired, or invalid.
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            serverError:
+              summary: Internal processing error
+              value:
+                code: INTERNAL_SERVER_ERROR
+                message: An unexpected error occurred.
+                details: Please retry later or contact support.
