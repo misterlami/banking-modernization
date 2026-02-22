@@ -16,5 +16,6 @@
 /workspace/modern-slice/app/src/main/java/org/openapitools/service/TransferService.java
 /workspace/modern-slice/app/src/main/java/org/openapitools/exception/AuthenticationFailedException.java
 /workspace/modern-slice/app/src/main/java/org/openapitools/model/TransferResponse.java
+/workspace/modern-slice/app/src/main/java/org/openapitools/repository/CustomerAuthRepository.java
 /workspace/modern-slice/app/src/main/java/org/openapitools/api/DefaultApi.java
 /workspace/modern-slice/app/src/main/java/org/openapitools/service/model/AuthResult.java

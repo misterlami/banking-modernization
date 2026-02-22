@@ -77,7 +77,7 @@ Proceed with contract-first modernization (stateless + JSON).
 Goal:
 Define modernization contract before writing new code.
 
-Prompt:
+Prompt (summary):
 Requested generation of OpenAPI 3.0 specification with:
 - POST /auth/login
 - POST /accounts/{accountId}/transfer
@@ -156,3 +156,36 @@ Modernization Decisions:
 Decision:
 Spring scaffold accepted as contract-compliant shell.
 Tagged as `phase3-spring-scaffold`.
+
+---
+
+## Phase 4: Data layer + real login + JWT
+
+Prompt (summary):
+Implemented Phase 4 end-to-end via LLM:
+- configure Spring datasource from LEGACY_PG_* env vars
+- add JDBC + Postgres + JWT dependencies
+- implement CustomerRepository (JdbcTemplate) querying customer(userid,pword,actno)
+- implement AuthService issuing signed JWT with claims {userId, roles, accountId, exp}
+- wire login controller to DB-backed service
+- return 401 with standard error schema on invalid credentials
+- keep OpenAPI contract unchanged
+- provide mvn + curl verification steps
+
+Verification commands and results:
+- ./mvnw test
+  - Result: PASS/FAIL
+- ./mvnw spring-boot:run with env vars
+  - Result: PASS/FAIL
+- curl login success
+  - Status:
+  - Body snippet:
+- curl login failure
+  - Status:
+  - Body snippet:
+
+Notes:
+- DB schema used: customer(userid, pword, actno)
+- Auth model: JWT Bearer, claims: userId, roles, accountId, exp
+- Assumptions:
+  - (example: plaintext password in legacy schema)
