@@ -29,18 +29,6 @@ jobs:
         working-directory: modern-slice/app
         run: ./mvnw -B test
 
-      - name: Run Trivy scan (SARIF report)
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln
-          vuln-type: os,library
-          ignore-unfixed: true
-          format: sarif
-          output: trivy-results.sarif
-          exit-code: "0"
-
       - name: Run Trivy gate (HIGH/CRITICAL)
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -52,6 +40,19 @@ jobs:
           ignore-unfixed: true
           format: table
           exit-code: "1"
+
+      - name: Run Trivy scan (SARIF report)
+        if: always()
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          vuln-type: os,library
+          ignore-unfixed: true
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: "0"
 
       - name: Upload Trivy results
         if: always()
