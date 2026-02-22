@@ -130,7 +130,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES ('Pallu','Yaji','1994-03-25','admin','test',' 1700120011','male',1000000000,'2901 S king dr','Apt 1418','chicago','Illinois',60616),('Adi','Yaji','1994-03-25','Adi','yaji','1700120011','MALE',21550,'2901 S king dr','Apt 1418','chicago','Illinois',60616),('Megha','Tatti','1995-04-13','megha','tt','1700120033','FEMALE',30639,'2901 S king dr','Apt 1418','chicago','Illinois',60616),('Rakshith','Amarnath','1995-03-19','Rakshith','megha','1700120043','MALE',199980000,'3001 S King Dr','Apt 0217','Chicago','Illinois',60616);
+INSERT INTO `customer` VALUES ('Pallu','Yaji','1994-03-25','admin','test','1700120022','male',1000000000,'2901 S king dr','Apt 1418','chicago','Illinois',60616),('Adi','Yaji','1994-03-25','Adi','yaji','1700120011','MALE',21550,'2901 S king dr','Apt 1418','chicago','Illinois',60616),('Megha','Tatti','1995-04-13','megha','tt','1700120033','FEMALE',30639,'2901 S king dr','Apt 1418','chicago','Illinois',60616),('Rakshith','Amarnath','1995-03-19','Rakshith','megha','1700120043','MALE',199980000,'3001 S King Dr','Apt 0217','Chicago','Illinois',60616);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 

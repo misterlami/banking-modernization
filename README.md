@@ -127,6 +127,27 @@ docker compose up --build
 
 ---
 
+## Run Legacy + Modern Side-by-Side
+From the repository root:
+
+```bash
+docker compose -f legacy-system/docker-compose.yml up --build -d
+docker compose -f modern-slice/docker-compose.yml up --build -d
+```
+
+Runtime URLs:
+- Legacy UI: `http://localhost:8082/banking/Home`
+- Modern API: `http://localhost:8080`
+- Modern Swagger UI: `http://localhost:8081`
+
+For Docker Desktop users running modern-slice against legacy Postgres:
+
+```bash
+MODERN_SLICE_PG_HOST=host.docker.internal docker compose -f modern-slice/docker-compose.yml up --build -d
+```
+
+---
+
 ## Acknowledgements
 Original Legacy Applications: [banking-application by ayaji](https://github.com/ayaji/Banking-application) → [banking-mordernization by kush](https://github.com/kushmirc/banking-modernization)
 

@@ -20,6 +20,7 @@ import org.openapitools.service.model.TransferResult;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -50,6 +54,19 @@ public class BankingController implements DefaultApi {
     this.jwtTokenService = jwtTokenService;
     this.authMapper = authMapper;
     this.transferMapper = transferMapper;
+  }
+
+  @GetMapping("/")
+  public ResponseEntity<Map<String, Object>> rootStatus() {
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("status", "UP");
+    payload.put("service", "modern-slice-api");
+    payload.put("message", "Modern slice API is running");
+    payload.put("timestamp", Instant.now());
+    payload.put("loginEndpoint", "POST /auth/login");
+    payload.put("transferEndpoint", "POST /accounts/{accountId}/transfer");
+    payload.put("swaggerUi", "http://localhost:8081");
+    return ResponseEntity.ok(payload);
   }
 
   @Override

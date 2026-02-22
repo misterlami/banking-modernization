@@ -3,6 +3,9 @@ info:
   title: Banking Modernization API
   version: 1.0.0
   description: Contract-first API for authentication and account transfers.
+servers:
+  - url: http://localhost:8080
+    description: Modern slice API (local)
 paths:
   /auth/login:
     post:

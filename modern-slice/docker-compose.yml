@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      LEGACY_PG_HOST: ${MODERN_SLICE_PG_HOST:-host.containers.internal}
+      LEGACY_PG_PORT: "5432"
+      LEGACY_PG_DB: banking_system
+      LEGACY_PG_USER: banking_user
+      LEGACY_PG_PASSWORD: Passw0rd!
+      JWT_SECRET: dev-secret-please-change
+      JWT_ISSUER: modern-slice
+      JWT_TTL_SECONDS: "3600"
+    ports:
+      - "8080:8080"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    environment:
+      SWAGGER_JSON: /spec/openapi.yaml
+    volumes:
+      - ./openapi:/spec:ro
+    ports:
+      - "8081:8080"
+
+  postgres:
+    image: postgres:15
+    profiles: ["standalone"]
+    environment:
+      POSTGRES_DB: banking_system
+      POSTGRES_USER: banking_user
+      POSTGRES_PASSWORD: Passw0rd!
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banking_user -d banking_system"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - ../legacy-system/schema_postgresql.sql:/docker-entrypoint-initdb.d/schema_postgresql.sql:ro
