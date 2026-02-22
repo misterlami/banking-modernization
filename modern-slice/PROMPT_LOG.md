@@ -113,3 +113,46 @@ Modernization Decisions:
 Decision:
 OpenAPI contract accepted as authoritative source of truth.
 Tagged as `phase2-openapi-contract`.
+
+---
+
+## Phase 3: Spring Boot 3 Scaffold (Contract Implementation Shell)
+
+Goal:
+Generate a Spring Boot 3 service skeleton from the OpenAPI contract that compiles, runs, and enforces request validation + standardized errors.
+
+Prompt (summary):
+Requested generation of a Spring Boot 3 project from `modern-slice/openapi/openapi.yaml` with controllers aligned to the spec, a service-layer seam for later business logic, and consistent error handling.
+
+AI Actions:
+- Generated Spring Boot 3 scaffold from OpenAPI using openapi-generator
+- Produced controllers/interfaces and DTO models based on the contract
+- Wired bean validation based on OpenAPI constraints
+- Implemented/produced global error handling returning `{code, message, details}`
+
+Human Review:
+- Confirmed endpoints exist and match OpenAPI paths/methods
+- Confirmed transfer endpoint requires request body fields defined in spec
+- Confirmed error response matches the contract schema
+- Confirmed no DB integration attempted yet (deferred to Phase 4)
+
+Verification:
+- Generator command:
+  - `[paste your openapi-generator docker command]`
+- App starts:
+  - `mvn test` passes
+  - `mvn spring-boot:run` starts successfully
+- Contract enforcement via curl:
+  - `curl -i -X POST http://localhost:8080/auth/login -H 'Content-Type: application/json' -d '{}'`
+    - returns 400 with VALIDATION_ERROR and missing field details
+  - `curl -i -X POST http://localhost:8080/accounts/123/transfer -H 'Content-Type: application/json' -d '{}'`
+    - returns 400 with VALIDATION_ERROR and missing field details
+
+Modernization Decisions:
+- Keep OpenAPI as source of truth; do not hand-edit controllers
+- Separate HTTP layer from business logic via service seam (AuthService, TransferService)
+- Enforce validation at the edge before touching persistence
+
+Decision:
+Spring scaffold accepted as contract-compliant shell.
+Tagged as `phase3-spring-scaffold`.
