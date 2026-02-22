@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  JAVA_VERSION: "21"
+  TRIVY_SEVERITY: "HIGH,CRITICAL" # Adjust this value to tune the fail gate.
+
+jobs:
+  test-and-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Run Maven tests
+        working-directory: modern-slice/app
+        run: ./mvnw -B test
+
+      - name: Run Trivy scan (filesystem)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: ${{ env.TRIVY_SEVERITY }}
+          vuln-type: os,library
+          ignore-unfixed: true
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: "1"
+
+      - name: Upload Trivy results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results
+          path: trivy-results.sarif
+          if-no-files-found: warn

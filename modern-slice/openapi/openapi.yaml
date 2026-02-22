@@ -6,11 +6,14 @@ info:
 servers:
   - url: http://localhost:8080
     description: Modern slice API (local)
+security:
+  - bearerAuth: []
 paths:
   /auth/login:
     post:
       summary: Authenticate a user and return a JWT
       operationId: login
+      security: []
       requestBody:
         required: true
         content:

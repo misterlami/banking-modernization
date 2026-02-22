@@ -218,3 +218,37 @@ Output:
 - files changed
 - commands
 - assumptions about transaction table mapping
+
+---
+
+## Phase 6: Cloud readiness (container-first + CI gates)
+
+Goal:
+Package the modern slice for reproducible local runs and enforce quality/security gates in CI.
+
+Prompt (summary):
+Requested AI to:
+- create a multi-stage Dockerfile for modern-slice/app
+- create modern-slice/docker-compose.yml to run app + Postgres with legacy schema initialization
+- add GitHub Actions CI running build/tests and a dependency/security scan (Trivy) with a HIGH/CRITICAL fail gate
+- update modern-slice/README.md with run instructions and CI gates
+
+AI Actions:
+- [fill after Codex completes]
+
+Human Review:
+- [fill after you verify compose + endpoints]
+
+Verification:
+- `docker compose -f modern-slice/docker-compose.yml up -d --build` succeeds
+- login + transfer succeed via curl
+- GitHub Actions workflow runs on push/PR
+- Trivy scan runs and enforces the configured threshold
+
+Modernization Decisions:
+- Container-first delivery with compose for deterministic demo + onboarding
+- CI as enforcement point for tests and vulnerability scanning
+- Environment-driven configuration to match cloud deployment patterns
+
+Decision:
+Accepted Phase 6 as complete when compose run and CI gates are green.
