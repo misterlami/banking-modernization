@@ -162,7 +162,7 @@ Tagged as `phase3-spring-scaffold`.
 ## Phase 4: Data layer + real login + JWT
 
 Prompt (summary):
-Implemented Phase 4 end-to-end via LLM:
+Implemented Phase 4 end-to-end via LLM
 - configure Spring datasource from LEGACY_PG_* env vars
 - add JDBC + Postgres + JWT dependencies
 - implement CustomerRepository (JdbcTemplate) querying customer(userid,pword,actno)
@@ -189,3 +189,32 @@ Notes:
 - Auth model: JWT Bearer, claims: userId, roles, accountId, exp
 - Assumptions:
   - (example: plaintext password in legacy schema)
+
+---
+
+## Phase 5: Transfer logic + tests
+
+Prompt (summary):
+Implement transfer endpoint end-to-end using legacy Postgres schema with JdbcTemplate.
+- Require Bearer JWT and enforce account ownership via accountId claim.
+- Execute atomic balance update using a single DB transaction and SELECT ... FOR UPDATE.
+- Insert a matching record into the legacy transaction table.
+- Return transactionId, status, and balanceAfter.
+- Handle errors with standard schema:
+  - 401 invalid/missing token
+  - 403 ownership mismatch
+  - 404 account not found
+  - 409 insufficient funds
+
+Add:
+- unit tests for TransferService
+- integration tests with Testcontainers Postgres using legacy schema
+
+Verification:
+- mvn test
+- curl login then transfer
+
+Output:
+- files changed
+- commands
+- assumptions about transaction table mapping

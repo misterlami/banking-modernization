@@ -21,7 +21,34 @@ public class GlobalExceptionHandler {
     return error(
         HttpStatus.UNAUTHORIZED,
         "AUTH_FAILED",
-        "Authentication failed",
+        "Missing or invalid authentication",
+        ex.getMessage());
+  }
+
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenException ex) {
+    return error(
+        HttpStatus.FORBIDDEN,
+        "FORBIDDEN",
+        "Access is forbidden",
+        ex.getMessage());
+  }
+
+  @ExceptionHandler(AccountNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleAccountNotFound(AccountNotFoundException ex) {
+    return error(
+        HttpStatus.NOT_FOUND,
+        "ACCOUNT_NOT_FOUND",
+        "Account not found",
+        ex.getMessage());
+  }
+
+  @ExceptionHandler(InsufficientFundsException.class)
+  public ResponseEntity<ErrorResponse> handleInsufficientFunds(InsufficientFundsException ex) {
+    return error(
+        HttpStatus.CONFLICT,
+        "INSUFFICIENT_FUNDS",
+        "Insufficient funds",
         ex.getMessage());
   }
 
