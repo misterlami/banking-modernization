@@ -1,157 +1,107 @@
 # Agentic Modernization: Legacy Banking System
 
-## Objective
+## 60-Second Pitch
+This repository shows how to modernize a legacy banking system with AI assistance without a full rewrite. It keeps domain behavior intact and modernizes one high-risk vertical slice (Login + Transfer) using contract-first APIs, Spring Boot service boundaries, automated tests, and CI security gates.
 
-Demonstrate a repeatable, AI-assisted modernization workflow applied to a legacy banking system.
-
-This repository modernizes one vertical slice (Login + Transfer) to prove the pattern.
-
-The goal is not to rewrite the banking application.
-The goal is to modernize how it is specified, implemented, tested, secured, and delivered.
-
----
-
-## What this repository demonstrates
-
-A practical modernization approach applied to a legacy servlet/JSP system:
-
-- Define the API contract first (OpenAPI)
-- Use AI to analyze legacy behavior and generate a service scaffold
-- Move functionality into a Spring Boot service boundary
-- Add contract-derived integration tests
-- Add unit tests for core business logic
-- Package and run via containers
-- Enforce quality and security gates in CI
-- Capture prompts, decisions, and validation steps
-
-This serves as a template for incrementally modernizing legacy systems with measurable governance and reproducibility.
-
----
-
-## Scope
-
-Only one vertical slice is modernized:
-
-- Login
-- Transfer
-
-Legacy behavior is preserved.
-Business rules are not redesigned.
-The engineering system around them is modernized.
-
----
-
-## Deliverables
-
-- Legacy application (reference implementation)
-- Modernized Spring Boot service for Login + Transfer
-- OpenAPI contract with examples
-- Contract-aligned integration tests
-- Unit tests for transfer logic
-- Docker and docker-compose runtime
-- CI pipeline with build, test, and dependency scanning
-- Prompt library and execution log
-- Before vs After architecture and metrics
-
----
-
-## Repository Structure
-
-- `/legacy-system`
-  Original application used to understand behavior
-
-- `/modern-slice`
-  AI-assisted modernization implementation
-
-- `/modern-slice/openapi`
-  OpenAPI contract (source of truth)
-
-- `/modern-slice/prompts`
-  Prompt patterns and orchestration logs
-
-- `/modern-slice/docker-compose.yml`
-  Modern slice container orchestration
-
-- `/.github/workflows/ci.yml`
-  CI pipeline (build, test, Trivy scan and gate)
-
----
-
-## What “Modernization” Means Here
-
-| Legacy                           | Modern                                 |
-| -------------------------------- | -------------------------------------- |
-| JSP + Servlets                   | API contract + Spring Boot service     |
-| Session-based auth               | Stateless JWT                          |
-| Manual verification              | Contract-derived automated tests       |
-| App-server deployment            | Containerized runtime                  |
-| Implicit request/response shapes | Versioned OpenAPI specification        |
-| Ad hoc changes (manual)          | CI-enforced quality and security gates |
-
-This approach modernizes delivery, safety, and scalability without rewriting domain logic.
-
----
-
-## Success Criteria
-
-- Login and Transfer run end-to-end
-- OpenAPI contract and implementation are aligned
-- Tests pass locally and in CI
-- Containers run from a clean clone
-- Security validation and dependency scanning enforced
-- Clear evidence of AI-assisted development and verification loop
-
----
-
-## Run legacy with Docker
-From the repository root:
+## Interview Flow (15 min)
+1. Start legacy stack.
+2. Start modern stack.
+3. Login via API and capture JWT.
+4. Execute transfer via API.
+5. Open Swagger UI and map the calls to the contract.
 
 ```bash
-cd legacy-system
-docker compose up --build
-```
+# 1) Start legacy stack
 
-Application URL:
-- `http://localhost:8082/banking/Home`
-
-Default legacy test credentials (see `legacy-system/Readme.txt`):
-- Customer: `Adi` / `yaji`
-- Banker: `banker` / `urvi`
-- Admin: `admin` / `admin`
-
-Troubleshooting:
-- First startup can take extra time while PostgreSQL initializes and imports `schema_postgresql.sql`.
-- If you update schema/init SQL and need a clean re-init, run:
-
-```bash
-docker compose down -v
-docker compose up --build
-```
-
----
-
-## Run Legacy + Modern Side-by-Side
-From the repository root:
-
-```bash
 docker compose -f legacy-system/docker-compose.yml up --build -d
+
+# 2) Start modern stack
+
 docker compose -f modern-slice/docker-compose.yml up --build -d
+
+# 3) Login and capture token
+
+JWT=$(curl -s -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"userid":"Adi","password":"yaji"}' | jq -r '.jwt')
+
+# 4) Execute transfer
+
+curl -s -X POST http://localhost:8080/accounts/1700120011/transfer \
+  -H "Authorization: Bearer $JWT" \
+  -H "Content-Type: application/json" \
+  -d '{"targetAccountId":"1700120043","amount":200,"currency":"USD","reference":"interview-demo"}'
 ```
 
-Runtime URLs:
+5. Open:
 - Legacy UI: `http://localhost:8082/banking/Home`
 - Modern API: `http://localhost:8080`
-- Modern Swagger UI: `http://localhost:8081`
+- Swagger UI: `http://localhost:8081`
 
-For Docker Desktop users running modern-slice against legacy Postgres:
+For Docker Desktop shared-DB runs, use:
 
 ```bash
 MODERN_SLICE_PG_HOST=host.docker.internal docker compose -f modern-slice/docker-compose.yml up --build -d
 ```
 
----
+## Objective
+Demonstrate a repeatable AI-assisted modernization workflow on a legacy servlet/JSP system.
+
+## What This Repository Demonstrates
+- Contract-first API design (`OpenAPI` as source of truth)
+- AI-assisted legacy comprehension and service scaffolding
+- Migration of Login + Transfer into Spring Boot controller/service/repository layers
+- Unit and integration test coverage for the modern slice
+- Containerized local runtime for deterministic demos
+- CI enforcement for tests and vulnerability scanning
+
+## Scope
+Modernized slice only:
+- Login
+- Transfer
+
+Out of scope:
+- Full legacy rewrite
+- Domain/business rule redesign
+
+## Outputs
+- Legacy reference system (`legacy-system`)
+- Modern Spring Boot slice (`modern-slice`)
+- OpenAPI contract and examples
+- Test suite (unit + integration)
+- Docker Compose runtime
+- CI gates for quality and security
+- AI usage audit log
+
+## Method
+| Section | Content |
+| --- | --- |
+| Purpose | Repeatable AI-augmented modernization pattern for regulated systems |
+| Inputs | Legacy code, schema, OpenAPI contract, API examples |
+| Loop | Comprehend -> Spec -> Generate -> Validate -> Secure -> Package |
+| Guardrails | Contract is source of truth, tests required, security scans required |
+| Governance | AI-generated code requires tests, review checklist, and scan evidence |
+| Scale-out | Template repo + CI policy + prompt library for team adoption |
+
+## Repository Structure
+- `legacy-system/`: legacy servlet/JSP reference implementation
+- `modern-slice/`: Spring Boot modernization slice (app + OpenAPI + compose)
+- `.github/workflows/ci.yml`: CI quality and security gates
+
+## Modernization Summary
+- Legacy HTTP/session flow replaced with JSON + JWT API auth
+- Servlet/JDBC coupling replaced by controller/service/repository boundaries
+- Manual flow checks replaced by automated tests and CI gates
+- App-server-centric runtime replaced by container-first execution
+
+## Success Criteria
+- Login and transfer work end-to-end
+- Implementation remains aligned with `modern-slice/openapi/openapi.yaml`
+- Demo runs from a clean clone with Docker Compose
+- CI enforces tests and security scan thresholds
+- AI-assisted decisions and validation evidence are documented
 
 ## Acknowledgements
-Original Legacy Applications: [banking-application by ayaji](https://github.com/ayaji/Banking-application) → [banking-mordernization by kush](https://github.com/kushmirc/banking-modernization)
-
-*This project is for learning purposes.*
+Original legacy applications:
+- [banking-application by ayaji](https://github.com/ayaji/Banking-application)
+- [banking-modernization by kush](https://github.com/kushmirc/banking-modernization)
