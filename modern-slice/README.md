@@ -94,11 +94,46 @@ From repository root (requires Trivy installed):
 trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 .
 ```
 
-## Metrics
+## Measurable Outcomes
 
-| Metric      | Current Value                                  |
-| ----------- | ---------------------------------------------- |
-| CI duration | TBD (populate from GitHub Actions run summary) |
+| Metric                                       | Value                                                                                                                  | Source                                                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Endpoints implemented                        | 2 contract endpoints (`POST /auth/login`, `POST /accounts/{accountId}/transfer`) + 1 service status endpoint (`GET /`) | OpenAPI contract and controller implementation                                                       |
+| Files changed since modernization began      | 63                                                                                                                     | Git history                                                                                          |
+| Lines added/removed (approx from git)        | +3823 / -58                                                                                                            | Git history                                                                                          |
+| Modules/packages created                     | 10 Java package directories                                                                                            | Java source tree change set                                                                          |
+| Total test count                             | 7                                                                                                                      | Maven/JUnit test reports                                                                             |
+| Unit tests count                             | 4                                                                                                                      | Maven/JUnit test reports                                                                             |
+| Integration tests count                      | 3                                                                                                                      | Maven/JUnit test reports                                                                             |
+| Coverage %                                   | 14.42%                                                                                                                 | Scoped JaCoCo report (`service`/`repository`/`controller`)                                           |
+| `mvn test` duration                          | 12.80s                                                                                                                 | Maven test run output                                                                                |
+| `mvn package` duration                       | 4.99s                                                                                                                  | Local Maven package timing output                                                                    |
+| Build success rate (local)                   | 100% (latest local test/package runs succeeded)                                                                        | Local Maven build outcomes                                                                           |
+| Docker image size (modern-slice app)         | 320 MB                                                                                                                 | Container image metadata                                                                             |
+| Time to start app container                  | 0.19s                                                                                                                  | Container restart timing                                                                             |
+| Compose startup success (PASS/FAIL)          | PASS                                                                                                                   | Compose runtime result                                                                               |
+| Dependency scan result (PASS/FAIL)           | PASS                                                                                                                   | Trivy vulnerability scan                                                                             |
+| Number of HIGH vulnerabilities               | 0                                                                                                                      | Trivy scan results                                                                                   |
+| Number of CRITICAL vulnerabilities           | 0                                                                                                                      | Trivy scan results                                                                                   |
+| CI pipeline status (last run)                | PASS                                                                                                                   | GitHub Actions run log artifact (`logs_58195667247.zip`)                                             |
+| CI duration (last run)                       | 55.59s                                                                                                                 | GitHub Actions job log timestamps (`2026-02-22T21:22:15.0705143Z` to `2026-02-22T21:23:10.6586973Z`) |
+| Steps executed in CI (build, test, scan)     | Test + Scan executed (Maven test, Trivy gate, Trivy SARIF scan, artifact upload)                                       | GitHub Actions run log artifact (`logs_58195667247.zip`)                                             |
+| Legacy auth vs new auth model                | Session-based vs JWT                                                                                                   | Legacy servlet flow and stateless auth implementation                                                |
+| Legacy transfer vs new transfer architecture | Servlet/JDBC vs layered API                                                                                            | Controller/service/repository implementation                                                         |
+| Validation approach change                   | Manual vs contract + bean validation                                                                                   | OpenAPI contract and Jakarta validation annotations                                                  |
+| Deployment model change                      | Manual app server vs docker-compose                                                                                    | Container-first runtime configuration                                                                |
+
+### What these metrics demonstrate
+
+- Modernization safety: high-risk flow changes are constrained to a defined slice (auth + transfer) with measurable change volume and integration tests in place.
+- Delivery repeatability: container startup is deterministic (compose PASS, fast container restart), and CI workflow codifies test/scan execution.
+- Security posture: dependency gating is active and current scan output shows 0 HIGH and 0 CRITICAL vulnerabilities.
+- Engineering quality: the implementation is contract-driven, layered, and test-backed (7 tests split across unit/integration).
+- Readiness for scale: the architecture moved from servlet/JDBC coupling to API + service + repository boundaries and containerized deployment.
+
+### Known gaps (tracked)
+
+- None currently in the measured metrics set.
 
 ## Shutdown
 

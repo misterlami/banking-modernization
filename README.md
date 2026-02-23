@@ -69,8 +69,11 @@ The engineering system around them is modernized.
 - `/modern-slice/prompts`
   Prompt patterns and orchestration logs
 
-- `/modern-slice/infra`
-  Docker and CI configuration
+- `/modern-slice/docker-compose.yml`
+  Modern slice container orchestration
+
+- `/.github/workflows/ci.yml`
+  CI pipeline (build, test, Trivy scan and gate)
 
 ---
 
@@ -83,7 +86,7 @@ The engineering system around them is modernized.
 | Manual verification              | Contract-derived automated tests       |
 | App-server deployment            | Containerized runtime                  |
 | Implicit request/response shapes | Versioned OpenAPI specification        |
-| Ad hoc changes                   | CI-enforced quality and security gates |
+| Ad hoc changes (manual)          | CI-enforced quality and security gates |
 
 This approach modernizes delivery, safety, and scalability without rewriting domain logic.
 
