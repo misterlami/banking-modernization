@@ -1,9 +1,9 @@
 # Agentic Modernization: Legacy Banking System
 
-## 60-Second Pitch
+## Elevator Pitch
 This repository shows how to modernize a legacy banking system with AI assistance without a full rewrite. It keeps domain behavior intact and modernizes one high-risk vertical slice (Login + Transfer) using contract-first APIs, Spring Boot service boundaries, automated tests, and CI security gates.
 
-## Interview Flow (15 min)
+## Demo Flow (15 min)
 1. Start legacy stack.
 2. Start modern stack.
 3. Login via API and capture JWT.
@@ -30,7 +30,7 @@ JWT=$(curl -s -X POST http://localhost:8080/auth/login \
 curl -s -X POST http://localhost:8080/accounts/1700120011/transfer \
   -H "Authorization: Bearer $JWT" \
   -H "Content-Type: application/json" \
-  -d '{"targetAccountId":"1700120043","amount":200,"currency":"USD","reference":"interview-demo"}'
+  -d '{"targetAccountId":"1700120043","amount":200,"currency":"USD","reference":"modernization demo"}'
 ```
 
 5. Open:
@@ -74,14 +74,14 @@ Out of scope:
 - AI usage audit log
 
 ## Method
-| Section | Content |
-| --- | --- |
-| Purpose | Repeatable AI-augmented modernization pattern for regulated systems |
-| Inputs | Legacy code, schema, OpenAPI contract, API examples |
-| Loop | Comprehend -> Spec -> Generate -> Validate -> Secure -> Package |
-| Guardrails | Contract is source of truth, tests required, security scans required |
+| Section    | Content                                                               |
+| ---------- | --------------------------------------------------------------------- |
+| Purpose    | Repeatable AI-augmented modernization pattern for regulated systems   |
+| Inputs     | Legacy code, schema, OpenAPI contract, API examples                   |
+| Loop       | Comprehend -> Spec -> Generate -> Validate -> Secure -> Package       |
+| Guardrails | Contract is source of truth, tests required, security scans required  |
 | Governance | AI-generated code requires tests, review checklist, and scan evidence |
-| Scale-out | Template repo + CI policy + prompt library for team adoption |
+| Scale-out  | Template repo + CI policy + prompt library for team adoption          |
 
 ## Repository Structure
 - `legacy-system/`: legacy servlet/JSP reference implementation
